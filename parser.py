@@ -5,6 +5,26 @@ class Parser:
   """test"""
   implicationPattern = re.compile('^(.*?)(<?)=>(.*?)(#|$)')
 
+  negationInConclusionPattern = re.compile('![^a-z]', re.I)
+
+  @classmethod
+  def testParenthesisSyntax(cls, line):
+    i = 0
+    for char in line:
+      if char == '(':
+        i += 1
+      elif char == ')':
+        i -= 1
+      if i < 0:
+        break
+    if i != 0:
+      Parser.parse_error('testParenthesisSyntax')
+
+  @classmethod
+  def parse_error(cls, origin = ''):
+    print('parse error from: ', origin)
+    # exit(1)
+
   def __init__(self):
     """caca"""
     self.facts = []
@@ -13,24 +33,28 @@ class Parser:
 
   def add_rules(self, line):
     matches = Parser.implicationPattern.match(line)
-    print(matches.group(1))
-    print(matches.group(2))
-    print(matches.group(3))
+    premisse = matches.group(1)
+    conclusion = matches.group(3)
+    print('premisse : ', premisse)
+    Parser.testParenthesisSyntax(premisse)
+    print('conclucion : ', conclusion)
+    Parser.testParenthesisSyntax(conclusion)
+    if Parser.negationInConclusionPattern.match(conclusion) is not None:
+      Parser.parse_error('add_rules')
+    # matches.group(1))
+    # print(matches.group(2))
+    # print(matches.group(3))
     return()
 
   def set_facts(self, line):
     if self.facts:
-      self.parse_error()
+      Parser.parse_error()
     self.facts.append(line)
 
   def set_query(self, line):
     if self.query:
-      self.parse_error()
+      Parser.parse_error()
     self.query.append(line)
-
-  def parse_error(self):
-    print('parse error')
-    exit(1)
 
   def handle_line(self, line):
     array = {
