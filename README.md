@@ -8,9 +8,10 @@
 
  Penser a lire les articles sur les graph afin de se lancer dans le stockage
  [lien1](http://www.bogotobogo.com/python/python_graph_data_structures.php)
- [lien2](https://www.python.org/doc/essays/graphs/)
+   [lien2](https://www.python.org/doc/essays/graphs/)
 
 
 # Resolution:
+  1. parsing du complexe
 
 # Affichage:
