@@ -9,6 +9,7 @@ class Parser:
   # re.I indicates that the regex will be csae-insensitive
   negationInConclusionPattern = re.compile('![^a-z]', re.I)
   badPatternInConclusion = re.compile('[^)+(!a-z]', re.I)
+  getFactsOrQueryPattern = re.compile('^[?=]((!?[a-z])*)(#|$)', re.I)
 
   graph = None
 
@@ -40,26 +41,44 @@ class Parser:
     if not self.graph:
       self.graph = Graph()
     matches = Parser.implicationPattern.match(line)
+    """ line == end is to be removed """
     if line == 'end':
       print(self.graph.graph)
     if matches is None:
       Parser.parse_error('add_rules')
     else:
-      print(
-          'line >>> ',
-          matches.group(1), matches.group(2), '=>',matches.group(3)
-          )
+      #print(
+      #    'line >>> ',
+      #    matches.group(1), matches.group(2), '=>',matches.group(3)
+      #    )
       self.graph.append_conclusion(matches.group(1), matches.group(3), matches.group(2))
+
+  def parse_facts_or_queries(self, line):
+    matchedItems = list(Parser.getFactsOrQueryPattern.match(line).group(1))
+    listMatchedItems = []
+    addNegation = None
+    for matchedItem in matchedItems:
+      if matchedItem == '!':
+        addNegation = True
+        continue
+      else:
+        listMatchedItems.append('!'+matchedItem if addNegation else matchedItem)
+        addNegation = None
+    return listMatchedItems
 
   def set_facts(self, line):
     if self.facts:
       Parser.parse_error('set_facts')
-    self.facts.append(line)
+    facts = self.parse_facts_or_queries(line)
+    #print('facts are --- ', facts)
+    self.facts = facts
 
   def set_query(self, line):
     if self.query:
       Parser.parse_error('set_query')
-    self.query.append(line)
+    queries = self.parse_facts_or_queries(line)
+    #print('queries are --- ', queries)
+    self.query = queries
 
   def handle_line(self, line):
     array = {

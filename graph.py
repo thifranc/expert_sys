@@ -26,7 +26,7 @@ class Graph:
     conclusions = self.handle_conclusion(right_member)
     if isDoubleEquivalence:
       conclusions += self.handle_conclusion(left_member)
-    print('conclusions are ------> ',conclusions)
+    #print('conclusions are ------> ',conclusions)
     if conclusions:
       for conclusion in conclusions:
         if not conclusion in self.graph:
