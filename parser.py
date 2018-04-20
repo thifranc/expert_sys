@@ -1,11 +1,16 @@
+#!/usr/bin/python3
+
 import os
 import re
 
 class Parser:
-  """test"""
-  implicationPattern = re.compile('^(.*?)(<?)=>(.*?)(#|$)')
 
+  implicationPattern = re.compile('^(.*?)(<?)=>(.*?)(#|$)')
+  # re.I indicates that the regex will be csae-insensitive
   negationInConclusionPattern = re.compile('![^a-z]', re.I)
+  badPatternInConclusion = re.compile('[^)+(!a-z]', re.I)
+
+  graph = None
 
   @classmethod
   def testParenthesisSyntax(cls, line):
@@ -26,34 +31,34 @@ class Parser:
     # exit(1)
 
   def __init__(self):
-    """caca"""
     self.facts = []
     self.query = []
     self.premisses = []
 
   def add_rules(self, line):
+    from graph import Graph
+    if not self.graph:
+      self.graph = Graph()
     matches = Parser.implicationPattern.match(line)
-    premisse = matches.group(1)
-    conclusion = matches.group(3)
-    print('premisse : ', premisse)
-    Parser.testParenthesisSyntax(premisse)
-    print('conclucion : ', conclusion)
-    Parser.testParenthesisSyntax(conclusion)
-    if Parser.negationInConclusionPattern.match(conclusion) is not None:
+    if line == 'end':
+      print(self.graph.graph)
+    if matches is None:
       Parser.parse_error('add_rules')
-    # matches.group(1))
-    # print(matches.group(2))
-    # print(matches.group(3))
-    return()
+    else:
+      print(
+          'line >>> ',
+          matches.group(1), matches.group(2), '=>',matches.group(3)
+          )
+      self.graph.append_conclusion(matches.group(1), matches.group(3), matches.group(2))
 
   def set_facts(self, line):
     if self.facts:
-      Parser.parse_error()
+      Parser.parse_error('set_facts')
     self.facts.append(line)
 
   def set_query(self, line):
     if self.query:
-      Parser.parse_error()
+      Parser.parse_error('set_query')
     self.query.append(line)
 
   def handle_line(self, line):
