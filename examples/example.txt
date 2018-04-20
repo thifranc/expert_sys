@@ -14,7 +14,7 @@ A + B <=> !C # A and B if and only if not C
 				# by a newline is used
 
 
+E + F => V + !(B+D) # E and F implies not V
 
 
-?GVX # Queries : What are G, V and X ?
 ?GVX # Queries : What are G, V and X ?

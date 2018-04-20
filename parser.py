@@ -2,10 +2,10 @@ import os
 import re
 
 class Parser:
-  """test"""
   implicationPattern = re.compile('^(.*?)(<?)=>(.*?)(#|$)')
 
   negationInConclusionPattern = re.compile('![^a-z]', re.I)
+  badPatternInConclusion = re.compile('[^)+(!a-z]', re.I)
 
   @classmethod
   def testParenthesisSyntax(cls, line):
@@ -26,7 +26,6 @@ class Parser:
     # exit(1)
 
   def __init__(self):
-    """caca"""
     self.facts = []
     self.query = []
     self.premisses = []
@@ -39,8 +38,12 @@ class Parser:
     Parser.testParenthesisSyntax(premisse)
     print('conclucion : ', conclusion)
     Parser.testParenthesisSyntax(conclusion)
-    if Parser.negationInConclusionPattern.match(conclusion) is not None:
-      Parser.parse_error('add_rules')
+    if Parser.negationInConclusionPattern.findall(conclusion):
+      Parser.parse_error('add_rules-Negation')
+      print(Parser.negationInConclusionPattern.findall(conclusion))
+    if Parser.badPatternInConclusion.findall(conclusion):
+      Parser.parse_error('add_rules-BadPattern')
+      print(Parser.badPatternInConclusion.findall(conclusion))
     # matches.group(1))
     # print(matches.group(2))
     # print(matches.group(3))
@@ -48,12 +51,12 @@ class Parser:
 
   def set_facts(self, line):
     if self.facts:
-      Parser.parse_error()
+      Parser.parse_error('set_facts')
     self.facts.append(line)
 
   def set_query(self, line):
     if self.query:
-      Parser.parse_error()
+      Parser.parse_error('set_query')
     self.query.append(line)
 
   def handle_line(self, line):
