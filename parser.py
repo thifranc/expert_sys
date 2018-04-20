@@ -6,6 +6,7 @@ import re
 class Parser:
 
   implicationPattern = re.compile('^(.*?)(<?)=>(.*?)(#|$)')
+  # re.I indicates that the regex will be csae-insensitive
   negationInConclusionPattern = re.compile('![^a-z]', re.I)
   badPatternInConclusion = re.compile('[^)+(!a-z]', re.I)
 
@@ -48,7 +49,7 @@ class Parser:
           'line >>> ',
           matches.group(1), matches.group(2), '=>',matches.group(3)
           )
-      self.graph.get_conclusions(matches.group(3), matches.group(1), matches.group(2))
+      self.graph.append_conclusion(matches.group(1), matches.group(3), matches.group(2))
 
   def set_facts(self, line):
     if self.facts:
