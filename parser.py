@@ -1,9 +1,11 @@
+#!/usr/bin/python3
+
 import os
 import re
 
 class Parser:
-  implicationPattern = re.compile('^(.*?)(<?)=>(.*?)(#|$)')
 
+  implicationPattern = re.compile('^(.*?)(<?)=>(.*?)(#|$)')
   negationInConclusionPattern = re.compile('![^a-z]', re.I)
   badPatternInConclusion = re.compile('[^)+(!a-z]', re.I)
 
@@ -31,23 +33,12 @@ class Parser:
     self.premisses = []
 
   def add_rules(self, line):
+    from graph import Graph
     matches = Parser.implicationPattern.match(line)
-    premisse = matches.group(1)
-    conclusion = matches.group(3)
-    print('premisse : ', premisse)
-    Parser.testParenthesisSyntax(premisse)
-    print('conclucion : ', conclusion)
-    Parser.testParenthesisSyntax(conclusion)
-    if Parser.negationInConclusionPattern.findall(conclusion):
-      Parser.parse_error('add_rules-Negation')
-      print(Parser.negationInConclusionPattern.findall(conclusion))
-    if Parser.badPatternInConclusion.findall(conclusion):
-      Parser.parse_error('add_rules-BadPattern')
-      print(Parser.badPatternInConclusion.findall(conclusion))
-    # matches.group(1))
-    # print(matches.group(2))
-    # print(matches.group(3))
-    return()
+    print('cur line --> ',
+        matches.group(1), matches.group(2), '=>', matches.group(3)
+        )
+    Graph.get_conclusions(matches.group(3), matches.group(1), matches.group(2))
 
   def set_facts(self, line):
     if self.facts:
