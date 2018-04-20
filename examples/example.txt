@@ -1,3 +1,5 @@
+-> stocker les deux premisses
+
 C => E # C implies E
 A + B + C => D # A and B and C implies D
 A | B => C
@@ -18,3 +20,11 @@ E + F => V + !(B+D) # E and F implies not V
 
 
 ?GVX # Queries : What are G, V and X ?
+
+
+
+A <=> B
+
+A => B
+B => A
+end

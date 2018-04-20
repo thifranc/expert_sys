@@ -8,6 +8,8 @@ class Graph:
 
   def __init__(self):
     self.conclusions = []
+    self.premisses = []
+    self.graph = {}
 
   """parenthesis arent useful as conclusion can only contain + operator"""
   getConclusionFactPattern = re.compile('!?[a-z]', re.I)
@@ -21,9 +23,13 @@ class Graph:
     else:
       return Graph.getConclusionFactPattern.findall(conclusion)
 
-  @classmethod
-  def get_conclusions(cls, conclusion, premisse, isDoubleEquivalence):
+  def get_conclusions(self, conclusion, premisse, isDoubleEquivalence):
     conclusions = Graph.handle_conclusion(conclusion)
     if isDoubleEquivalence:
       conclusions += Graph.handle_conclusion(premisse)
     print('conclusions are ------> ',conclusions)
+    if conclusions:
+      for conc in conclusions:
+        if not conc in self.graph:
+          self.graph[conc] = []
+        self.graph[conc].append(premisse)

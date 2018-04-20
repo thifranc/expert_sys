@@ -9,6 +9,8 @@ class Parser:
   negationInConclusionPattern = re.compile('![^a-z]', re.I)
   badPatternInConclusion = re.compile('[^)+(!a-z]', re.I)
 
+  graph = None
+
   @classmethod
   def testParenthesisSyntax(cls, line):
     i = 0
@@ -34,11 +36,19 @@ class Parser:
 
   def add_rules(self, line):
     from graph import Graph
+    if not self.graph:
+      self.graph = Graph()
     matches = Parser.implicationPattern.match(line)
-    print('cur line --> ',
-        matches.group(1), matches.group(2), '=>', matches.group(3)
-        )
-    Graph.get_conclusions(matches.group(3), matches.group(1), matches.group(2))
+    if line == 'end':
+      print(self.graph.graph)
+    if matches is None:
+      Parser.parse_error('add_rules')
+    else:
+      print(
+          'line >>> ',
+          matches.group(1), matches.group(2), '=>',matches.group(3)
+          )
+      self.graph.get_conclusions(matches.group(3), matches.group(1), matches.group(2))
 
   def set_facts(self, line):
     if self.facts:
