@@ -32,10 +32,32 @@ def handle_close_parenthesis():
 def has_priority(token, to_compare):
   return(operators.index(token) <= operators.index(to_compare))
 
-if __name__ == '__main__':
-  tokens = sys.argv[1]
+"""
+['a', 'b', '+', 'C', '|']
+should become:
+  {
+	'|': [ 'C', {
+				'+': ['A', 'B']
+				} ]
+	}
+"""
+def from_postfix_to_graph(postfix):
+  operandes = []
+  operationItem = {}
+  for token in postfix:
+    if is_operator(token):
+      if not operationItem:
+        operationItem = { token: list(operandes) }
+      else:
+        operationItem[token] = list(operandes)
+      operandes.clear()
+    else:
+      operandes.append(token)
+    print('tab - ', operandes, operationItem)
 
+def from_string_to_rpn(string):
   for token in tokens:
+    print('cur token -- ', token, '\npile - ', pile, '\noutput', output)
     if is_operator(token):
       handle_operator(token)
     elif is_open_parenthesis(token):
@@ -44,7 +66,11 @@ if __name__ == '__main__':
       handle_close_parenthesis()
     else:
       output.append(token)
-
   output.extend(list(reversed(pile)))
   print(output)
+
+if __name__ == '__main__':
+  from_postfix_to_graph(['a', 'b', '+', 'C', '|']) #gives: {'+': ['a', 'b'], '|': ['C']}
+  #tokens = sys.argv[1]
+  #from_string_to_rpn(tokens)
 
