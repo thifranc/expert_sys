@@ -32,29 +32,6 @@ def handle_close_parenthesis():
 def has_priority(token, to_compare):
   return(operators.index(token) <= operators.index(to_compare))
 
-"""
-['a', 'b', '+', 'C', '|']
-should become:
-  {
-	'|': [ 'C', {
-				'+': ['A', 'B']
-				} ]
-	}
-"""
-def from_postfix_to_graph(postfix):
-  operandes = []
-  operationItem = {}
-  for token in postfix:
-    if is_operator(token):
-      if not operationItem:
-        operationItem = { token: list(operandes) }
-      else:
-        operationItem[token] = list(operandes)
-      operandes.clear()
-    else:
-      operandes.append(token)
-    print('tab - ', operandes, operationItem)
-
 def from_string_to_rpn(string):
   for token in tokens:
     print('cur token -- ', token, '\npile - ', pile, '\noutput', output)
@@ -69,8 +46,41 @@ def from_string_to_rpn(string):
   output.extend(list(reversed(pile)))
   print(output)
 
+"""
+['a', 'b', '+', 'C', '|']
+should become:
+  {
+	'|': [ 'C', {
+				'+': ['A', 'B']
+				} ]
+	}
+"""
+def from_postfix_to_graph(postfix):
+  operandes = []
+  operationItem = {}
+  print('tab received at call - ', postfix)
+  list_len = len(postfix)
+  if (list_len == 0):
+    return {}
+  elif len(postfix) == 1:
+    return postfix.pop()
+  for index, token in enumerate(postfix):
+    if is_operator(token):
+      if not operationItem:
+        operationItem = { token: list(operandes) }
+      else:
+        print('operator item exist but should not ----- ', operationItem)
+      newTab = postfix[index + 1:]
+      print('newTab sliced is --- ', newTab)
+      newTab.insert(0, operationItem)
+      return from_postfix_to_graph(newTab)
+      break
+    else:
+      operandes.append(token)
+
 if __name__ == '__main__':
-  from_postfix_to_graph(['a', 'b', '+', 'C', '|']) #gives: {'+': ['a', 'b'], '|': ['C']}
+  graphed_generated = from_postfix_to_graph(['a', 'b', '+', 'C', '|']) #gives: {'+': ['a', 'b'], '|': ['C']}
+  print('we have a new graph --- ', graphed_generated);
   #tokens = sys.argv[1]
   #from_string_to_rpn(tokens)
 
