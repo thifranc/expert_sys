@@ -62,19 +62,18 @@ def from_postfix_to_graph(postfix):
   operandes = []
   operationItem = {}
   list_len = len(postfix)
-  if (list_len == 0):
+  if list_len == 0:
     return {}
-  elif len(postfix) == 1:
+  elif list_len == 1:
     return postfix.pop()
   for index, token in enumerate(postfix):
     if is_operator(token):
       if not operationItem:
-        operationItem = { token: list(operandes) }
+        operationItem = { token: [operandes.pop(), operandes.pop()] }
       else:
         print('operator item exist but should not ----- ', operationItem)
-      newTab = postfix[index + 1:]
-      newTab.insert(0, operationItem)
-      return from_postfix_to_graph(newTab)
+      operandes.append(operationItem)
+      return from_postfix_to_graph(operandes + postfix[index + 1:])
       break
     else:
       operandes.append(token)
@@ -83,6 +82,6 @@ if __name__ == '__main__':
   input_string = sys.argv[1]
   parsed = from_string_to_rpn(Parser.parse_string_to_token(input_string))
   print('we have a new parsed string --- ', parsed);
-  #graphed_generated = from_postfix_to_graph(parsed)
-  #print('we have a new graph --- ', graphed_generated);
+  graphed_generated = from_postfix_to_graph(parsed)
+  print('we have a new graph --- ', graphed_generated);
 
