@@ -69,6 +69,16 @@ def from_postfix_to_graph(postfix):
   for index, token in enumerate(postfix):
     if is_operator(token):
       if not operationItem:
+        """
+        we will take last two operands on stack and affiliate them with current operator
+         e.g. : postfix = [a, b, c, +, ^]
+         operandes appends until '+', where operands=[a, b, c]
+         operation is b+c => { '+': [b,c] }
+         operands is now = [ a ]
+         we append to it new operand (which is operationItem created)
+         then we craft a new array to have a recursion call with:
+         [a, { '+': [b,c] }, ^]
+        """
         operationItem = { token: [operandes.pop(), operandes.pop()] }
       else:
         print('operator item exist but should not ----- ', operationItem)
