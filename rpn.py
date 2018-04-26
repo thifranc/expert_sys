@@ -3,6 +3,8 @@
 import sys
 import re
 
+from parser import Parser
+
 output = []
 pile = []
 operators = ['+', '|', '^']
@@ -32,9 +34,8 @@ def handle_close_parenthesis():
 def has_priority(token, to_compare):
   return(operators.index(token) <= operators.index(to_compare))
 
-def from_string_to_rpn(string):
+def from_string_to_rpn(tokens):
   for token in tokens:
-    print('cur token -- ', token, '\npile - ', pile, '\noutput', output)
     if is_operator(token):
       handle_operator(token)
     elif is_open_parenthesis(token):
@@ -44,7 +45,7 @@ def from_string_to_rpn(string):
     else:
       output.append(token)
   output.extend(list(reversed(pile)))
-  print(output)
+  return output
 
 """
 ['a', 'b', '+', 'C', '|']
@@ -58,7 +59,6 @@ should become:
 def from_postfix_to_graph(postfix):
   operandes = []
   operationItem = {}
-  print('tab received at call - ', postfix)
   list_len = len(postfix)
   if (list_len == 0):
     return {}
@@ -71,7 +71,6 @@ def from_postfix_to_graph(postfix):
       else:
         print('operator item exist but should not ----- ', operationItem)
       newTab = postfix[index + 1:]
-      print('newTab sliced is --- ', newTab)
       newTab.insert(0, operationItem)
       return from_postfix_to_graph(newTab)
       break
@@ -79,8 +78,9 @@ def from_postfix_to_graph(postfix):
       operandes.append(token)
 
 if __name__ == '__main__':
-  graphed_generated = from_postfix_to_graph(['a', 'b', '+', 'C', '|']) #gives: {'+': ['a', 'b'], '|': ['C']}
+  tokens = sys.argv[1]
+  parsed = from_string_to_rpn(Parser.parse_string_to_token(tokens))
+  print('we have a new parsed string --- ', parsed);
+  graphed_generated = from_postfix_to_graph(parsed)
   print('we have a new graph --- ', graphed_generated);
-  #tokens = sys.argv[1]
-  #from_string_to_rpn(tokens)
 

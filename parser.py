@@ -38,9 +38,6 @@ class Parser:
       ex: parse_string_to_token('(!a + B) | c')
       => [ '(', '!a', '+', 'B', ')', '|', 'c' ]
     """
-    #those two lines should be removed as they're useless
-    matches = Parser.tokenPattern.findall(string)
-    print('matches -- ', matches)
     return Parser.tokenPattern.findall(string)
 
   def __init__(self):
@@ -55,7 +52,9 @@ class Parser:
     matches = Parser.implicationPattern.match(line)
     """ line == end is to be removed """
     if line == 'end':
-      print(self.graph.graph)
+      print('rules are : ', self.graph.graph)
+      print('facts to begin with -- ', self.facts)
+      print('query to solve -- ', self.query)
     if matches is None:
       Parser.parse_error('add_rules')
     else:
