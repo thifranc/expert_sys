@@ -19,8 +19,9 @@ def is_close_parenthesis(token):
   return(token == ')')
 
 def handle_operator(token):
-  to_compare = pile[-1] if pile else token
-  if is_open_parenthesis(to_compare) or has_priority(token, to_compare):
+  if pile:
+    to_compare = pile[-1]
+  if not pile or is_open_parenthesis(to_compare) or has_priority(token, to_compare):
     pile.append(token)
   else:
     output.append(pile.pop())
@@ -32,7 +33,7 @@ def handle_close_parenthesis():
   pile.pop()
 
 def has_priority(token, to_compare):
-  return(operators.index(token) <= operators.index(to_compare))
+  return(operators.index(token) < operators.index(to_compare))
 
 def from_string_to_rpn(tokens):
   for token in tokens:
@@ -44,6 +45,7 @@ def from_string_to_rpn(tokens):
       handle_close_parenthesis()
     else:
       output.append(token)
+    print('cur token :', token, ' cur pile: ', pile, ' cur output: ', output)
   output.extend(list(reversed(pile)))
   return output
 
@@ -78,9 +80,9 @@ def from_postfix_to_graph(postfix):
       operandes.append(token)
 
 if __name__ == '__main__':
-  tokens = sys.argv[1]
-  parsed = from_string_to_rpn(Parser.parse_string_to_token(tokens))
+  input_string = sys.argv[1]
+  parsed = from_string_to_rpn(Parser.parse_string_to_token(input_string))
   print('we have a new parsed string --- ', parsed);
-  graphed_generated = from_postfix_to_graph(parsed)
-  print('we have a new graph --- ', graphed_generated);
+  #graphed_generated = from_postfix_to_graph(parsed)
+  #print('we have a new graph --- ', graphed_generated);
 
