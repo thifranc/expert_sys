@@ -15,7 +15,7 @@ class Graph:
   getConclusionFactPattern = re.compile('!?[a-z]', re.I)
 
   def handle_conclusion(self, conclusion):
-    if Parser.negationInConclusionPattern.findall(conclusion):
+    if Parser.negationPattern.findall(conclusion):
       Parser.parse_error('add_rules-Negation')
     elif Parser.badPatternInConclusion.findall(conclusion):
       Parser.parse_error('add_rules-BadPattern')

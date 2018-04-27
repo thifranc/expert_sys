@@ -7,9 +7,10 @@ class Parser:
 
   implicationPattern = re.compile('^(.*?)(<?)=>(.*?)(#|$)')
   # re.I indicates that the regex will be csae-insensitive
-  negationInConclusionPattern = re.compile('![^a-z]', re.I)
+  negationPattern = re.compile('![^a-z]', re.I)
   badPatternInConclusion = re.compile('[^)+(!a-z]', re.I)
   getFactsOrQueryPattern = re.compile('^[?=]((!?[a-z])*)(#|$)', re.I)
+  tokenPattern = re.compile('[a-z()+|^]|![a-z]', re.I)
 
   graph = None
 
@@ -31,6 +32,14 @@ class Parser:
     print('parse error from: ', origin)
     # exit(1)
 
+  @classmethod
+  def parse_string_to_token(cls, string):
+    """
+      ex: parse_string_to_token('(!a + B) | c')
+      => [ '(', '!a', '+', 'B', ')', '|', 'c' ]
+    """
+    return Parser.tokenPattern.findall(string)
+
   def __init__(self):
     self.facts = []
     self.query = []
@@ -43,7 +52,9 @@ class Parser:
     matches = Parser.implicationPattern.match(line)
     """ line == end is to be removed """
     if line == 'end':
-      print(self.graph.graph)
+      print('rules are : ', self.graph.graph)
+      print('facts to begin with -- ', self.facts)
+      print('query to solve -- ', self.query)
     if matches is None:
       Parser.parse_error('add_rules')
     else:

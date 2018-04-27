@@ -3,6 +3,8 @@
 import sys
 import re
 
+from parser import Parser
+
 output = []
 pile = []
 operators = ['+', '|', '^']
@@ -17,8 +19,9 @@ def is_close_parenthesis(token):
   return(token == ')')
 
 def handle_operator(token):
-  to_compare = pile[-1] if pile else token
-  if is_open_parenthesis(to_compare) or has_priority(token, to_compare):
+  if pile:
+    to_compare = pile[-1]
+  if not pile or is_open_parenthesis(to_compare) or has_priority(token, to_compare):
     pile.append(token)
   else:
     output.append(pile.pop())
@@ -30,11 +33,9 @@ def handle_close_parenthesis():
   pile.pop()
 
 def has_priority(token, to_compare):
-  return(operators.index(token) <= operators.index(to_compare))
+  return(operators.index(token) < operators.index(to_compare))
 
-if __name__ == '__main__':
-  tokens = sys.argv[1]
-
+def from_string_to_rpn(tokens):
   for token in tokens:
     if is_operator(token):
       handle_operator(token)
@@ -44,7 +45,53 @@ if __name__ == '__main__':
       handle_close_parenthesis()
     else:
       output.append(token)
-
+    print('cur token :', token, ' cur pile: ', pile, ' cur output: ', output)
   output.extend(list(reversed(pile)))
-  print(output)
+  return output
+
+"""
+['a', 'b', '+', 'C', '|']
+should become:
+  {
+	'|': [ 'C', {
+				'+': ['A', 'B']
+				} ]
+	}
+"""
+def from_postfix_to_graph(postfix):
+  operandes = []
+  operationItem = {}
+  list_len = len(postfix)
+  if list_len == 0:
+    return {}
+  elif list_len == 1:
+    return postfix.pop()
+  for index, token in enumerate(postfix):
+    if is_operator(token):
+      if not operationItem:
+        """
+        we will take last two operands on stack and affiliate them with current operator
+         e.g. : postfix = [a, b, c, +, ^]
+         operandes appends until '+', where operands=[a, b, c]
+         operation is b+c => { '+': [b,c] }
+         operands is now = [ a ]
+         we append to it new operand (which is operationItem created)
+         then we craft a new array to have a recursion call with:
+         [a, { '+': [b,c] }, ^]
+        """
+        operationItem = { token: [operandes.pop(), operandes.pop()] }
+      else:
+        print('operator item exist but should not ----- ', operationItem)
+      operandes.append(operationItem)
+      return from_postfix_to_graph(operandes + postfix[index + 1:])
+      break
+    else:
+      operandes.append(token)
+
+if __name__ == '__main__':
+  input_string = sys.argv[1]
+  parsed = from_string_to_rpn(Parser.parse_string_to_token(input_string))
+  print('we have a new parsed string --- ', parsed);
+  graphed_generated = from_postfix_to_graph(parsed)
+  print('we have a new graph --- ', graphed_generated);
 
