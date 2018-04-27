@@ -5,6 +5,7 @@ import re
 
 from parser import Parser
 from token import Token
+from node import Node
 
 output = []
 pile = []
@@ -83,4 +84,12 @@ if __name__ == '__main__':
   print('we have a new parsed string --- ', parsed);
   graph_generated = from_postfix_to_graph(parsed)
   print('we have a new graph --- ', graph_generated);
+
+  for i in ['A', 'B', 'C', 'D', 'A', 'B']:
+    Node(i)
+
+  print(Node.get_instance('A'))
+  print(Node.get_instance('G'))
+  print(Node._instances)
+
 
