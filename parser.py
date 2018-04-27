@@ -3,6 +3,8 @@
 import os
 import re
 
+from token import Token
+
 class Parser:
 
   implicationPattern = re.compile('^(.*?)(<?)=>(.*?)(#|$)')
@@ -38,7 +40,7 @@ class Parser:
       ex: parse_string_to_token('(!a + B) | c')
       => [ '(', '!a', '+', 'B', ')', '|', 'c' ]
     """
-    return Parser.tokenPattern.findall(string)
+    return [Token(token) for token in Parser.tokenPattern.findall(string)]
 
   def __init__(self):
     self.facts = []
