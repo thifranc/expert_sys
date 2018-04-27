@@ -25,7 +25,7 @@ def handle_close_parenthesis():
   pile.pop()
 
 
-def from_string_to_rpn(tokens):
+def from_tokens_to_postfix(tokens):
   for token in tokens:
     if token.is_operator():
       handle_operator(token)
@@ -78,12 +78,18 @@ def from_postfix_to_graph(postfix):
     else:
       operandes.append(token)
 
+def from_tokens_to_graph(tokens):
+  return from_postfix_to_graph(from_tokens_to_postfix(tokens))
+
+def from_string_to_graph(string):
+  return from_postfix_to_graph(from_tokens_to_postfix(Parser.parse_string_to_token(string)))
+
 if __name__ == '__main__':
   input_string = sys.argv[1]
-  parsed = from_string_to_rpn(Parser.parse_string_to_token(input_string))
-  print('we have a new parsed string --- ', parsed);
-  graph_generated = from_postfix_to_graph(parsed)
-  print('we have a new graph --- ', graph_generated);
+  tokens = Parser.parse_string_to_token(input_string)
+  postfix = from_tokens_to_postfix(tokens)
+  graph_generated = from_postfix_to_graph(postfix)
+  print('graph generated --- ', graph_generated)
 
   for i in ['A', 'B', 'C', 'D', 'A', 'B']:
     Node(i)
@@ -91,5 +97,3 @@ if __name__ == '__main__':
   print(Node.get_instance('A'))
   print(Node.get_instance('G'))
   print(Node._instances)
-
-
