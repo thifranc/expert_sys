@@ -4,44 +4,34 @@ import sys
 import re
 
 from parser import Parser
+from token import Token
+from node import Node
 
 output = []
 pile = []
-operators = ['+', '|', '^']
-
-def is_operator(token):
-  return(token in operators)
-
-def is_open_parenthesis(token):
-  return(token == '(')
-
-def is_close_parenthesis(token):
-  return(token == ')')
 
 def handle_operator(token):
   if pile:
     to_compare = pile[-1]
-  if not pile or is_open_parenthesis(to_compare) or has_priority(token, to_compare):
+  if not pile or to_compare.is_open_parenthesis() or token.has_priority_on(to_compare):
     pile.append(token)
   else:
     output.append(pile.pop())
     pile.append(token)
 
 def handle_close_parenthesis():
-  while is_open_parenthesis(pile[-1]) is not True:
+  while pile[-1].is_open_parenthesis() is not True:
     output.append(pile.pop())
   pile.pop()
 
-def has_priority(token, to_compare):
-  return(operators.index(token) < operators.index(to_compare))
 
 def from_tokens_to_postfix(tokens):
   for token in tokens:
-    if is_operator(token):
+    if token.is_operator():
       handle_operator(token)
-    elif is_open_parenthesis(token):
+    elif token.is_open_parenthesis():
       pile.append(token)
-    elif is_close_parenthesis(token):
+    elif token.is_close_parenthesis():
       handle_close_parenthesis()
     else:
       output.append(token)
@@ -67,7 +57,7 @@ def from_postfix_to_graph(postfix):
   elif list_len == 1:
     return postfix.pop()
   for index, token in enumerate(postfix):
-    if is_operator(token):
+    if isinstance(token, Token) and token.is_operator():
       if not operationItem:
         """
         we will take last two operands on stack and affiliate them with current operator
@@ -98,6 +88,12 @@ if __name__ == '__main__':
   input_string = sys.argv[1]
   tokens = Parser.parse_string_to_token(input_string)
   postfix = from_tokens_to_postfix(tokens)
-  graphed_generated = from_postfix_to_graph(postfix)
-  print('graphe generated --- ', graphed_generated)
+  graph_generated = from_postfix_to_graph(postfix)
+  print('graph generated --- ', graph_generated)
 
+  for i in ['A', 'B', 'C', 'D', 'A', 'B']:
+    Node(i)
+
+  print(Node.get_instance('A'))
+  print(Node.get_instance('G'))
+  print(Node._instances)
