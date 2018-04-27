@@ -35,7 +35,7 @@ def handle_close_parenthesis():
 def has_priority(token, to_compare):
   return(operators.index(token) < operators.index(to_compare))
 
-def from_string_to_rpn(tokens):
+def from_tokens_to_postfix(tokens):
   for token in tokens:
     if is_operator(token):
       handle_operator(token)
@@ -88,10 +88,16 @@ def from_postfix_to_graph(postfix):
     else:
       operandes.append(token)
 
+def from_tokens_to_graph(tokens):
+  return from_postfix_to_graph(from_tokens_to_postfix(tokens))
+
+def from_string_to_graph(string):
+  return from_postfix_to_graph(from_tokens_to_postfix(Parser.parse_string_to_token(string)))
+
 if __name__ == '__main__':
   input_string = sys.argv[1]
-  parsed = from_string_to_rpn(Parser.parse_string_to_token(input_string))
-  print('we have a new parsed string --- ', parsed);
-  graphed_generated = from_postfix_to_graph(parsed)
-  print('we have a new graph --- ', graphed_generated);
+  tokens = Parser.parse_string_to_token(input_string)
+  postfix = from_tokens_to_postfix(tokens)
+  graphed_generated = from_postfix_to_graph(postfix)
+  print('graphe generated --- ', graphed_generated)
 
