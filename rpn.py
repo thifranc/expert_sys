@@ -5,12 +5,8 @@ import re
 
 from parser import Parser
 from token import Token
-from node import Node
 
-output = []
-pile = []
-
-def handle_operator(token):
+def handle_operator(token, output, pile):
   if pile:
     to_compare = pile[-1]
   if not pile or to_compare.is_open_parenthesis() or token.has_priority_on(to_compare):
@@ -19,23 +15,25 @@ def handle_operator(token):
     output.append(pile.pop())
     pile.append(token)
 
-def handle_close_parenthesis():
+def handle_close_parenthesis(output, pile):
   while pile[-1].is_open_parenthesis() is not True:
     output.append(pile.pop())
   pile.pop()
 
 
 def from_tokens_to_postfix(tokens):
+  output = []
+  pile = []
   for token in tokens:
     if token.is_operator():
-      handle_operator(token)
+      handle_operator(token, output, pile)
     elif token.is_open_parenthesis():
       pile.append(token)
     elif token.is_close_parenthesis():
-      handle_close_parenthesis()
+      handle_close_parenthesis(output, pile)
     else:
       output.append(token)
-    print('cur token :', token, ' cur pile: ', pile, ' cur output: ', output)
+    #print('cur token :', token, ' cur pile: ', pile, ' cur output: ', output)
   output.extend(list(reversed(pile)))
   return output
 
@@ -83,17 +81,3 @@ def from_tokens_to_graph(tokens):
 
 def from_string_to_graph(string):
   return from_postfix_to_graph(from_tokens_to_postfix(Parser.parse_string_to_token(string)))
-
-if __name__ == '__main__':
-  input_string = sys.argv[1]
-  tokens = Parser.parse_string_to_token(input_string)
-  postfix = from_tokens_to_postfix(tokens)
-  graph_generated = from_postfix_to_graph(postfix)
-  print('graph generated --- ', graph_generated)
-
-  for i in ['A', 'B', 'C', 'D', 'A', 'B']:
-    Node(i)
-
-  print(Node.get_instance('A'))
-  print(Node.get_instance('G'))
-  print(Node._instances)
