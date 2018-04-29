@@ -13,10 +13,12 @@ class Node:
   _value = None
   _parents = []
   _is_child = None
+  _is_negation = None
 
   def __init__(self, name, premisses, parents = []):
     self._name = name
     self._is_child = True if parents else None
+    self._is_negation = True if name[0] == '!' else None
     self._parents = parents
     for premisse in premisses:
       self._premisses.append(from_string_to_graph(premisse))

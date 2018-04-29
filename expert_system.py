@@ -32,8 +32,9 @@ if __name__ == '__main__':
       #print('queries to solve -- ', parser.queries)
       #for key in sorted(parser.rules):
       #  print(parser.rules[key], ' => ', key)
+      resolver = Resolver(parser.facts, parser.rules)
       for query in parser.queries:
-        resolvers.append(Resolver(parser.facts, parser.rules, query))
+        print('should resolve - ', query)
   except (NameError, PermissionError, IsADirectoryError) as error:
     print(error)
     exit(1)
