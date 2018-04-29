@@ -35,6 +35,8 @@ if __name__ == '__main__':
       resolver = Resolver(parser.facts, parser.rules)
       for query in parser.queries:
         print('should resolve - ', query)
+        response = resolver.resolve_query(query)
+        print('FINALLY FOUND ANSWER --- ', response)
   except (NameError, PermissionError, IsADirectoryError) as error:
     print(error)
     exit(1)

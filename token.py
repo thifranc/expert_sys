@@ -1,7 +1,15 @@
+
+import re
+
 class Token(str):
   """middleware class that handle all simple functions of tokens"""
 
   operators = ['+', '|', '^']
+
+  @classmethod
+  def is_token(cls, token):
+    # isTokenPattern = re.compile('!?[a-z]', re.I)
+    return True if isinstance(token, str) else None
 
   def __init__(self, token):
     self.token = token
