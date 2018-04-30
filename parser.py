@@ -13,8 +13,19 @@ class Parser:
   badPatternInConclusion = re.compile('[^)+(!a-z]', re.I)
   getFactsOrQueryPattern = re.compile('^[?=]((!?[a-z])*)(#|$)', re.I)
   tokenPattern = re.compile('[a-z()+|^]|![a-z]', re.I)
+  """parenthesis arent useful as conclusion can only contain + operator"""
+  getConclusionFactPattern = re.compile('!?[a-z]', re.I)
 
-  graph = None
+  rules = {}
+
+  @classmethod
+  def handle_conclusion(self, conclusion):
+    if Parser.negationPattern.findall(conclusion):
+      Parser.parse_error('add_rules-Negation')
+    elif Parser.badPatternInConclusion.findall(conclusion):
+      Parser.parse_error('add_rules-BadPattern')
+    else:
+      return Parser.getConclusionFactPattern.findall(conclusion)
 
   @classmethod
   def testParenthesisSyntax(cls, line):
@@ -44,19 +55,20 @@ class Parser:
 
   def __init__(self):
     self.facts = []
-    self.query = []
-    self.premisses = []
+    self.queries = []
+
+  def append_conclusion(self, left_member, right_member, isDoubleEquivalence):
+    conclusions = Parser.handle_conclusion(right_member)
+    if isDoubleEquivalence:
+      self.append_conclusion(right_member, left_member, None)
+    if conclusions:
+      for conclusion in conclusions:
+        if not conclusion in self.rules:
+          self.rules[conclusion] = []
+        self.rules[conclusion].append(left_member)
 
   def add_rules(self, line):
-    from graph import Graph
-    if not self.graph:
-      self.graph = Graph()
     matches = Parser.implicationPattern.match(line)
-    """ line == end is to be removed """
-    if line == 'end':
-      print('rules are : ', self.graph.graph)
-      print('facts to begin with -- ', self.facts)
-      print('query to solve -- ', self.query)
     if matches is None:
       Parser.parse_error('add_rules')
     else:
@@ -64,7 +76,7 @@ class Parser:
       #    'line >>> ',
       #    matches.group(1), matches.group(2), '=>',matches.group(3)
       #    )
-      self.graph.append_conclusion(matches.group(1), matches.group(3), matches.group(2))
+      self.append_conclusion(matches.group(1), matches.group(3), matches.group(2))
 
   def parse_facts_or_queries(self, line):
     matchedItems = list(Parser.getFactsOrQueryPattern.match(line).group(1))
@@ -87,11 +99,11 @@ class Parser:
     self.facts = facts
 
   def set_query(self, line):
-    if self.query:
+    if self.queries:
       Parser.parse_error('set_query')
     queries = self.parse_facts_or_queries(line)
     #print('queries are --- ', queries)
-    self.query = queries
+    self.queries = queries
 
   def handle_line(self, line):
     array = {

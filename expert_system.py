@@ -3,7 +3,9 @@
 import argparse
 import os
 import re
+import collections
 from parser import Parser
+from resolver import Resolver
 
 if __name__ == '__main__':
 
@@ -13,6 +15,7 @@ if __name__ == '__main__':
   args = parser.parse_args()
 
   parser = Parser()
+  resolvers = []
 
   try:
     with open(args.file, 'r') as file:
@@ -25,6 +28,15 @@ if __name__ == '__main__':
         # print(line)
         parser.handle_line(line)
       # text_input = file.read()
+      #print('facts to begin with -- ', parser.facts)
+      #print('queries to solve -- ', parser.queries)
+      #for key in sorted(parser.rules):
+      #  print(parser.rules[key], ' => ', key)
+      resolver = Resolver(parser.facts, parser.rules)
+      for query in parser.queries:
+        print('should resolve - ', query)
+        response = resolver.resolve_query(query)
+        print('FINALLY FOUND ANSWER --- ', response)
   except (NameError, PermissionError, IsADirectoryError) as error:
     print(error)
     exit(1)
