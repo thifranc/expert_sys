@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from nodes import Node
-from token import Token
+from tokens import Token
 
 class Resolver:
   """

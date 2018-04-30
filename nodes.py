@@ -8,9 +8,6 @@ class Node:
   It can have 0 or more premisses that leads to the token itself
   """
 
-  _name = ''
-  _premisses = []
-  _value = None
   #_is_negation = None
 
   def __init__(self, name, premisses):
@@ -22,3 +19,6 @@ class Node:
     for premisse in premisses:
       self._premisses.append(from_string_to_graph(premisse))
     #print('node ', self._name, ' has as premisses : ', self._premisses)
+
+  def __repr__(self):
+    return(repr(self._premisses))

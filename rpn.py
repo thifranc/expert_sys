@@ -4,7 +4,7 @@ import sys
 import re
 
 from parser import Parser
-from token import Token
+from tokens import Token
 
 def handle_operator(token, output, pile):
   if pile:

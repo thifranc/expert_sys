@@ -3,7 +3,7 @@
 import os
 import re
 
-from token import Token
+from tokens import Token
 
 class Parser:
 
