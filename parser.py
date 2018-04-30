@@ -43,7 +43,6 @@ class Parser:
       Error('testParenthesisSyntax')
 
   @classmethod
-  @classmethod
   def parse_string_to_token(cls, string):
     """
       ex: parse_string_to_token('(!a + B) | c')
