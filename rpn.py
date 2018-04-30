@@ -67,6 +67,8 @@ def from_postfix_to_graph(postfix):
          then we craft a new array to have a recursion call with:
          [a, { '+': [b,c] }, ^]
         """
+        if len(operandes) != 2:
+          print('ERROR WILL CRASH')
         operationItem = { token: [operandes.pop(), operandes.pop()] }
       else:
         print('operator item exist but should not ----- ', operationItem)
