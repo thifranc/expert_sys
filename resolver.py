@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 
-from nodes import Node
+from node import Node
 from tokens import Token
+from error import Error
 
 class Resolver:
   """
@@ -103,7 +104,7 @@ class Resolver:
         break
     return value
 
-  def resolve_node(self, name, parents):
+  def resolve_node(self, name, parents = []):
     """
       this function is just a wrapper
       for resolve_node_value
@@ -129,13 +130,9 @@ class Resolver:
       anti_query = query[1:]
     else:
       anti_query = '!' + query
-    node_value = self.resolve_node(query, [])
-    anti_node_value = self.resolve_node(anti_query, [])
-    if node_value == None and anti_node_value == None:
-      return 'unknown'
-    elif node_value == None and anti_node_value == True:
-      return 'false'
-    elif node_value == True and anti_node_value == None:
-      return 'true'
+    node_value = self.resolve_node(query, parents)
+    anti_node_value = self.resolve_node(anti_query)
+    if node_value != anti_node_value:
+      return str(node_value)
     else:
-      return 'contradiction'
+      return ('unknown') if not node_value else Error('resolve query', 'contradiction with {}'.format(query))
