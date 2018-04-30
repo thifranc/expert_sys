@@ -13,6 +13,7 @@ class Parser:
   badPatternInConclusion = re.compile('[^)+(!a-z]', re.I)
   getFactsOrQueryPattern = re.compile('^[?=]((!?[a-z])*)(#|$)', re.I)
   tokenPattern = re.compile('[a-z()+|^]|![a-z]', re.I)
+  tokenPatternReversed = re.compile('[^a-z()+|\^!]', re.I)
   """parenthesis arent useful as conclusion can only contain + operator"""
   getConclusionFactPattern = re.compile('!?[a-z]', re.I)
 
@@ -43,7 +44,7 @@ class Parser:
   @classmethod
   def parse_error(cls, origin = ''):
     print('parse error from: ', origin)
-    # exit(1)
+    #exit(1)
 
   @classmethod
   def parse_string_to_token(cls, string):
@@ -51,6 +52,9 @@ class Parser:
       ex: parse_string_to_token('(!a + B) | c')
       => [ '(', '!a', '+', 'B', ')', '|', 'c' ]
     """
+    badPattern = Parser.tokenPatternReversed.search(string)
+    if badPattern:
+      Parser.parse_error('parse_string_to_token')
     return [Token(token) for token in Parser.tokenPattern.findall(string)]
 
   def __init__(self):
