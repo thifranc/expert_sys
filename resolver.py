@@ -3,18 +3,19 @@
 from nodes import Node
 from token import Token
 
-"""
+class Resolver:
+  """
   this class is used to resolve queries
   it holds a nodes attribute that contains all nodes that have boon resolved
   this includes the facts + every nodes that needs to be resolved to answer a query
-"""
-class Resolver:
-
-  _nodes = {}
-  _rules = {}
-  _facts = []
+  attributes:
+    _nodes ==> {}
+    _rules ==> {}
+    _facts ==> []
+  """
 
   def __init__(self, facts, rules):
+    self._nodes = {}
     for fact in facts:
       node = Node(fact, [])
       node._value = True
