@@ -56,7 +56,7 @@ class Parser:
     lastToken = None
     for token in tokens:
       curToken = Token(token)
-      if lastToken and Token.token_are_the_same_type(lastToken, curToken):
+      if Token.token_are_the_same_type(lastToken, curToken):
         print('compare - ', lastToken.token, curToken.token)
         Error('parse_string_to_token', '-repetition not good')
         return

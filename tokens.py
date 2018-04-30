@@ -5,6 +5,7 @@ class Token(str):
   """middleware class that handle all simple functions of tokens"""
 
   operators = ['+', '|', '^']
+
   tokenPurePattern = re.compile('^!?[a-z]{1}|[+|^()]{1}$', re.I)
 
   @classmethod
@@ -14,14 +15,7 @@ class Token(str):
 
   @classmethod
   def token_are_the_same_type(self, token1, token2):
-    if not token1 or not token2:
-      return None
-    elif not token1.is_operator() and not token2.is_operator():
-      return True
-    elif token1.is_operator() and token2.is_operator():
-      return True
-    else:
-      return None
+    return (None if (not token1 or not token2) else (token1.is_operator() and token2.is_operator()))
 
   def __init__(self, token):
     if not self.tokenPurePattern.match(token):
