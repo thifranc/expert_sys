@@ -4,6 +4,7 @@ import os
 import re
 
 from token import Token
+from error import Error
 
 class Parser:
 
@@ -12,8 +13,8 @@ class Parser:
   negationPattern = re.compile('![^a-z]', re.I)
   badPatternInConclusion = re.compile('[^)+(!a-z]', re.I)
   getFactsOrQueryPattern = re.compile('^[?=]((!?[a-z])*)(#|$)', re.I)
-  tokenPattern = re.compile('[a-z()+|^]|![a-z]', re.I)
-  tokenPatternReversed = re.compile('[^a-z()+|\^!]', re.I)
+  tokenPattern = re.compile('^([a-z()+|^]|![a-z])+$', re.I)
+  tokenPatternBis = re.compile('!?.', re.I)
   """parenthesis arent useful as conclusion can only contain + operator"""
   getConclusionFactPattern = re.compile('!?[a-z]', re.I)
 
@@ -22,9 +23,9 @@ class Parser:
   @classmethod
   def handle_conclusion(self, conclusion):
     if Parser.negationPattern.findall(conclusion):
-      Parser.parse_error('add_rules-Negation')
+      Error('add_rules', '-Negation')
     elif Parser.badPatternInConclusion.findall(conclusion):
-      Parser.parse_error('add_rules-BadPattern')
+      Error('add_rules', '-BadPattern')
     else:
       return Parser.getConclusionFactPattern.findall(conclusion)
 
@@ -39,23 +40,30 @@ class Parser:
       if i < 0:
         break
     if i != 0:
-      Parser.parse_error('testParenthesisSyntax')
+      Error('testParenthesisSyntax')
 
   @classmethod
-  def parse_error(cls, origin = ''):
-    print('parse error from: ', origin)
-    #exit(1)
-
   @classmethod
   def parse_string_to_token(cls, string):
     """
       ex: parse_string_to_token('(!a + B) | c')
       => [ '(', '!a', '+', 'B', ')', '|', 'c' ]
     """
-    badPattern = Parser.tokenPatternReversed.search(string)
-    if badPattern:
-      Parser.parse_error('parse_string_to_token')
-    return [Token(token) for token in Parser.tokenPattern.findall(string)]
+    if not Parser.tokenPattern.match(string):
+      Error('parse_string_to_token', '-bad pattern in token')
+      return
+    tokens = Parser.tokenPatternBis.findall(string)
+    tokenInstances = []
+    lastToken = None
+    for token in tokens:
+      curToken = Token(token)
+      if lastToken and Token.token_are_the_same_type(lastToken, curToken):
+        print('compare - ', lastToken.token, curToken.token)
+        Error('parse_string_to_token', '-repetition not good')
+        return
+      tokenInstances.append(curToken)
+      lastToken = tokenInstances[-1]
+    return tokenInstances
 
   def __init__(self):
     self.facts = []
@@ -74,7 +82,7 @@ class Parser:
   def add_rules(self, line):
     matches = Parser.implicationPattern.match(line)
     if matches is None:
-      Parser.parse_error('add_rules')
+      Error('add_rules')
     else:
       #print(
       #    'line >>> ',
@@ -97,14 +105,14 @@ class Parser:
 
   def set_facts(self, line):
     if self.facts:
-      Parser.parse_error('set_facts')
+      Error('set_facts')
     facts = self.parse_facts_or_queries(line)
     #print('facts are --- ', facts)
     self.facts = facts
 
   def set_query(self, line):
     if self.queries:
-      Parser.parse_error('set_query')
+      Error('set_query')
     queries = self.parse_facts_or_queries(line)
     #print('queries are --- ', queries)
     self.queries = queries
