@@ -1,0 +1,8 @@
+X + Y + Z + V => J
+(A + B ) | C ^ G => C
+B => !X
+A => !B #should raise an error cause B is already set to true
+
+=AB!GFT
+
+?JCX

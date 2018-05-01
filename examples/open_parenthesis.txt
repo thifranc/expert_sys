@@ -1,0 +1,10 @@
+# -> stocker les deux premisses
+
+(A + B) | C ^ G => C
+(A + B) | )C ^ G => C
+B => !X
+A => !B #should raise an error cause B is already set to true
+
+=AB!GFT
+
+?CX
