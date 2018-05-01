@@ -30,6 +30,15 @@ class Resolver:
     """
     self._nodes[node._name] = node
 
+  def get_anti_query(self, query):
+    """
+    convenience function
+    """
+    if query[0] == '!':
+      return query[1:]
+    else:
+      return '!' + query
+
   def or_operation(self, left, right):
     """==> left | right """
     return (left or right)
@@ -120,14 +129,8 @@ class Resolver:
       if not anti_test:
         anti_value = self.resolve_node(self.get_anti_query(name), parents + [ name ], True)
         if value and anti_value:
-          Error('contradiction when looking for ', name)
+          Error('CONTRADICTION', 'contradiction when looking for ' + name)
       return value
-
-  def get_anti_query(self, query):
-    if query[0] == '!':
-      return query[1:]
-    else:
-      return '!' + query
 
   def resolve_query(self, query):
     """

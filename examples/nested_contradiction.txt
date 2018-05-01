@@ -1,0 +1,10 @@
+D => A
+D => !A
+
+E | F => V
+C => F
+A => E
+
+
+=CD!E
+?BCV
