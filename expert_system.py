@@ -34,11 +34,8 @@ if __name__ == '__main__':
       #  print(parser.rules[key], ' => ', key)
       resolver = Resolver(parser.facts, parser.rules)
       for query in parser.queries:
-        print('should resolve - ', query)
         response = resolver.resolve_query(query)
-        print('FINALLY FOUND ANSWER --- ', response)
+        print('query ', query, ' has resolved to : ', response)
   except (NameError, PermissionError, IsADirectoryError) as error:
     print(error)
     exit(1)
-
-# print(text_input)

@@ -3,7 +3,6 @@ A + B + C => D
 A | B => C
 A + !B => F
 X + !G => H
-#X & !G => H 		bad syntax tracking here !
 V ^ W => X
 A + B => Y + Z
 F => !V
