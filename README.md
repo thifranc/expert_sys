@@ -13,6 +13,7 @@
   Article sur la notation polonaise inversée
   [lien1 (avec pseudo code)](http://www.crlf.be/)
   [wikipedia](https://fr.wikipedia.org/wiki/Notation_polonaise_inverse)
+  [conversion + calcul](http://interactivepython.org/runestone/static/pythonds/BasicDS/InfixPrefixandPostfixExpressions.html)
 
 # Resolution:
   1. parsing du complexe
