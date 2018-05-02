@@ -29,6 +29,9 @@ class Token(str):
   def is_operator(self):
     return(self.token in Token.operators)
 
+  def is_parenthesis(self):
+    return(self.token == '(' or self.token == ')')
+
   def is_open_parenthesis(self):
     return(self.token == '(')
 

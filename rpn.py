@@ -52,7 +52,10 @@ def from_postfix_to_graph(postfix):
   """
   operandes = []
   if len(postfix) <= 1:
-    return postfix.pop() if postfix else {}
+    if postfix[0].is_operator():
+        Error('parse_string_to_token', 'only one operator')
+    else:
+      return postfix.pop() if postfix else {}
   for index, token in enumerate(postfix):
     if isinstance(token, Token) and token.is_operator():
       """
@@ -65,8 +68,6 @@ def from_postfix_to_graph(postfix):
        then we craft a new array to have a recursion call with:
        [a, { '+': [b,c] }, ^]
       """
-      if len(operandes) != 2:
-        Error('from_postfix_to_graph', '- to many operators')
       operandes.append({ token: [operandes.pop(), operandes.pop()] })
       return from_postfix_to_graph(operandes + postfix[index + 1:])
     else:

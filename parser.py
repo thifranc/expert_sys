@@ -56,11 +56,12 @@ class Parser:
     lastToken = None
     for token in tokens:
       curToken = Token(token)
-      if Token.token_are_the_same_type(lastToken, curToken):
+      tokenInstances.append(curToken)
+      if not curToken.is_parenthesis() and Token.token_are_the_same_type(lastToken, curToken):
         Error('parse_string_to_token', '-repetition not good')
         return
-      tokenInstances.append(curToken)
-      lastToken = tokenInstances[-1]
+      if not curToken.is_parenthesis():
+        lastToken = tokenInstances[-1]
     return tokenInstances
 
   def __init__(self):
@@ -82,10 +83,6 @@ class Parser:
     if matches is None:
       Error('add_rules')
     else:
-      #print(
-      #    'line >>> ',
-      #    matches.group(1), matches.group(2), '=>',matches.group(3)
-      #    )
       self.append_conclusion(matches.group(1), matches.group(3), matches.group(2))
 
   def parse_facts_or_queries(self, line):
@@ -105,14 +102,12 @@ class Parser:
     if self.facts:
       Error('set_facts')
     facts = self.parse_facts_or_queries(line)
-    #print('facts are --- ', facts)
     self.facts = facts
 
   def set_query(self, line):
     if self.queries:
       Error('set_query')
     queries = self.parse_facts_or_queries(line)
-    #print('queries are --- ', queries)
     self.queries = queries
 
   def handle_line(self, line):
@@ -120,10 +115,3 @@ class Parser:
       '?': self.set_query,
       '=': self.set_facts
     }.get(line[0], self.add_rules)(line)
-
-if __name__ == '__main__':
-  parser = Parser()
-  expectation = 5
-  if 4 is not 5:
-    print('error')
-  print('bring me some tests')
