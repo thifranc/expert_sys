@@ -30,6 +30,15 @@ class Resolver:
     """
     self._nodes[node._name] = node
 
+  def get_anti_query(self, query):
+    """
+    convenience function
+    """
+    if query[0] == '!':
+      return query[1:]
+    else:
+      return '!' + query
+
   def or_operation(self, left, right):
     """==> left | right """
     return (left or right)
@@ -43,7 +52,7 @@ class Resolver:
     return (left and right)
 
   def error():
-    print('ERROR CUT ALL SHIT')
+    Error('ERROR CUT ALL SHIT')
 
   def resolve_premisse_value(self, premisse, parents):
     """
@@ -104,7 +113,7 @@ class Resolver:
         break
     return value
 
-  def resolve_node(self, name, parents = []):
+  def resolve_node(self, name, parents = [], anti_test = None):
     """
       this function is just a wrapper
       for resolve_node_value
@@ -117,6 +126,10 @@ class Resolver:
       value = self.resolve_node_value(node, parents)
       node._value = value
       self.add_node(node)
+      if not anti_test:
+        anti_value = self.resolve_node(self.get_anti_query(name), parents + [ name ], True)
+        if value and anti_value:
+          Error('CONTRADICTION', 'contradiction when looking for ' + name)
       return value
 
   def resolve_query(self, query):
@@ -125,14 +138,14 @@ class Resolver:
       will look for its node and anti_node value
       and make a synthese of combined results
     """
-    anti_query = ''
-    if query[0] == '!':
-      anti_query = query[1:]
-    else:
-      anti_query = '!' + query
-    node_value = self.resolve_node(query, parents)
+    anti_query = self.get_anti_query(query)
+    node_value = self.resolve_node(query, [])
     anti_node_value = self.resolve_node(anti_query)
-    if node_value != anti_node_value:
-      return str(node_value)
+    if not node_value and anti_node_value:
+      return 'false'
+    elif node_value and not anti_node_value:
+      return 'true'
+    elif not node_value and not anti_node_value:
+      return 'unknown'
     else:
-      return ('unknown') if not node_value else Error('resolve query', 'contradiction with {}'.format(query))
+      Error('BIG ERROR INCOMING')

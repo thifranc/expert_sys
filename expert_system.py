@@ -20,25 +20,15 @@ if __name__ == '__main__':
   try:
     with open(args.file, 'r') as file:
       for line in file:
-        # print(line)
         line = re.sub('\s', '', line)
         line_is_ignored = ignored_line.match(line)
         if line_is_ignored is not None:
           continue
-        # print(line)
         parser.handle_line(line)
-      # text_input = file.read()
-      #print('facts to begin with -- ', parser.facts)
-      #print('queries to solve -- ', parser.queries)
-      #for key in sorted(parser.rules):
-      #  print(parser.rules[key], ' => ', key)
       resolver = Resolver(parser.facts, parser.rules)
       for query in parser.queries:
-        print('should resolve - ', query)
         response = resolver.resolve_query(query)
-        print('FINALLY FOUND ANSWER --- ', response)
+        print('query ', query, ' has resolved to : ', response)
   except (NameError, PermissionError, IsADirectoryError) as error:
     print(error)
     exit(1)
-
-# print(text_input)

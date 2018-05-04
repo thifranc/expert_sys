@@ -15,7 +15,10 @@ class Token(str):
 
   @classmethod
   def token_are_the_same_type(self, token1, token2):
-    return (None if (not token1 or not token2) else (token1.is_operator() and token2.is_operator()))
+    if not token1 or not token2:
+      return None
+    else:
+      return token1.is_operator() == token2.is_operator()
 
   def __init__(self, token):
     if not self.tokenPurePattern.match(token):
@@ -25,6 +28,9 @@ class Token(str):
 
   def is_operator(self):
     return(self.token in Token.operators)
+
+  def is_parenthesis(self):
+    return(self.token == '(' or self.token == ')')
 
   def is_open_parenthesis(self):
     return(self.token == '(')
