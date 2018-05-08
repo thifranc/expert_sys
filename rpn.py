@@ -52,7 +52,7 @@ def from_postfix_to_graph(postfix):
   """
   operandes = []
   if len(postfix) <= 1:
-    if postfix[0].is_operator():
+    if isinstance(postfix[0], Token) and postfix[0].is_operator():
         Error('parse_string_to_token', 'only one operator')
     else:
       return postfix.pop() if postfix else {}
