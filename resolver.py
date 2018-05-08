@@ -2,7 +2,7 @@
 
 from node import Node
 from tokens import Token
-from error import Error
+from contradiction_error import ContradictionError
 
 class Resolver:
   """
@@ -51,8 +51,8 @@ class Resolver:
     """==> left + right """
     return (left and right)
 
-  def error():
-    Error('ERROR CUT ALL SHIT')
+  def error(self):
+    raise ContradictionError('unknown_operator')
 
   def resolve_premisse_value(self, premisse, parents):
     """
@@ -98,7 +98,7 @@ class Resolver:
       '|': self.or_operation,
       '+': self.and_operation,
       '^': self.xor_operation
-    }.get(operators[0], self.error)(left_member_value, right_member_value)
+    }.get(operators[0], self.error())(left_member_value, right_member_value)
     return premisse_value
 
   def resolve_node_value(self, node, parents):
@@ -119,17 +119,24 @@ class Resolver:
       for resolve_node_value
       it prevents from solving many times the same node
     """
+    print('trying to resolve node {}.'.format(name))
     if name in self._nodes:
+      print('returning ==> ', self._nodes[name]._value)
       return self._nodes[name]._value
     else:
       node = Node(name, self._rules[name] if name in self._rules else [])
+      print('node premisses are : ')
+      for premisse in node._premisses:
+        print(premisse)
+      print('')
       value = self.resolve_node_value(node, parents)
       node._value = value
       self.add_node(node)
       if not anti_test:
         anti_value = self.resolve_node(self.get_anti_query(name), parents + [ name ], True)
         if value and anti_value:
-          Error('CONTRADICTION', 'contradiction when looking for ' + name)
+          raise ContradictionError(name, value)
+      print('returning ==> ', value)
       return value
 
   def resolve_query(self, query):
@@ -148,4 +155,4 @@ class Resolver:
     elif not node_value and not anti_node_value:
       return 'unknown'
     else:
-      Error('BIG ERROR INCOMING')
+      raise ContradictionError()

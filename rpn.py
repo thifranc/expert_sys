@@ -5,7 +5,7 @@ import re
 
 from parser import Parser
 from tokens import Token
-from error import Error
+from parse_error import ParseError
 
 def handle_operator(token, output, pile):
   if pile:
@@ -19,7 +19,10 @@ def handle_operator(token, output, pile):
 def handle_close_parenthesis(output, pile):
   while pile and pile[-1].is_open_parenthesis() is not True:
     output.append(pile.pop())
-  pile.pop() if pile else Error('Handle handle_close_parenthesis', '-no corresponding parenthesis')
+  if pile:
+    pile.pop()
+  else:
+    raise ParseError('-no corresponding parenthesis')
 
 
 def from_tokens_to_postfix(tokens):
@@ -36,7 +39,7 @@ def from_tokens_to_postfix(tokens):
       output.append(token)
     #print('cur token :', token, ' cur pile: ', pile, ' cur output: ', output)
   if '(' in pile:
-    Error('from_tokens_to_postfix', '- open parenthesis not closed')
+    raise ParseError('- open parenthesis not closed')
   output.extend(list(reversed(pile)))
   return output
 
@@ -53,7 +56,7 @@ def from_postfix_to_graph(postfix):
   operandes = []
   if len(postfix) <= 1:
     if isinstance(postfix[0], Token) and postfix[0].is_operator():
-        Error('parse_string_to_token', 'only one operator')
+        raise ParseError('only one operator')
     else:
       return postfix.pop() if postfix else {}
   for index, token in enumerate(postfix):
@@ -77,4 +80,8 @@ def from_tokens_to_graph(tokens):
   return from_postfix_to_graph(from_tokens_to_postfix(tokens))
 
 def from_string_to_graph(string):
-  return from_postfix_to_graph(from_tokens_to_postfix(Parser.parse_string_to_token(string)))
+  try:
+    return from_postfix_to_graph(from_tokens_to_postfix(Parser.parse_string_to_token(string)))
+  except ParseError as exception:
+    print('Parse error of type : {} detected on line\n\t=>{}'.format(exception.exception_type, string))
+    exit(1)
