@@ -4,6 +4,7 @@ from node import Node
 from tokens import Token
 from contradiction_error import ContradictionError
 from file_error import FileError
+from termcolor import colored
 
 class Resolver:
   """
@@ -16,7 +17,7 @@ class Resolver:
     _facts ==> []
   """
 
-  def __init__(self, facts, rules):
+  def __init__(self, facts, rules, verbose = None):
     self._nodes = {}
     for fact in facts:
       node = Node(fact, [])
@@ -24,6 +25,7 @@ class Resolver:
       self.add_node(node)
     self._rules = rules
     self._facts = facts
+    self._verbose = verbose
 
   def add_node(self, node):
     """
@@ -99,20 +101,17 @@ class Resolver:
       '|': self.or_operation,
       '+': self.and_operation,
       '^': self.xor_operation
-    }.get(operators[0], self.error())(left_member_value, right_member_value)
+    }.get(operators[0], self.error)(left_member_value, right_member_value)
     return premisse_value
 
   def resolve_node_value(self, node, parents):
     if node._name in self._facts:
       return True
-    value = None
     for premisse in node._premisses:
     # need only one True to determine that Node value is True
     # but need all wrongs to determine that Node value is None
       if self.resolve_premisse_value(premisse, parents):
-        value = True
-        break
-    return value
+        return True
 
   def resolve_node(self, name, parents = [], anti_test = None):
     """
@@ -120,24 +119,27 @@ class Resolver:
       for resolve_node_value
       it prevents from solving many times the same node
     """
-    print('trying to resolve node {}.'.format(name))
+    ret = 'trying to resolve node {}.'.format(name) # print for debug TO BE REMOVED
     if name in self._nodes:
-      print('returning ==> ', self._nodes[name]._value)
+      if self._verbose:
+        print(ret, '\nreturning ==> ', self._nodes[name]._value, '\n') # print for debug TO BE REMOVED
       return self._nodes[name]._value
     else:
-      node = Node(name, self._rules[name] if name in self._rules else [])
-      print('node premisses are : ')
-      for premisse in node._premisses:
-        print(premisse)
-      print('')
+      node = Node(name, self._rules[name] if name in self._rules else []) # print for debug TO BE REMOVED
+      ret += '\nnode premisses are : ' # print for debug TO BE REMOVED
+      for premisse in node._premisses: # print for debug TO BE REMOVED
+        ret += "\n{}".format(premisse) # print for debug TO BE REMOVED
       value = self.resolve_node_value(node, parents)
       node._value = value
       self.add_node(node)
       if not anti_test:
         anti_value = self.resolve_node(self.get_anti_query(name), parents + [ name ], True)
         if value and anti_value:
+          if self._verbose:
+            print(ret) # print for debug
           raise ContradictionError(name, value)
-      print('returning ==> ', value)
+      if self._verbose:
+        print(ret, '\nreturning ==> ', value, '\n') # print for debug TO BE REMOVED
       return value
 
   def resolve_query(self, query):

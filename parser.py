@@ -5,7 +5,7 @@ import re
 
 from tokens import Token
 from parse_error import ParseError
-
+from termcolor import colored
 class Parser:
 
   implicationPattern = re.compile('^(.*?)(<?)=>(.*?)(#|$)')
@@ -17,8 +17,6 @@ class Parser:
   tokenPatternBis = re.compile('!?.', re.I)
   """parenthesis arent useful as conclusion can only contain + operator"""
   getConclusionFactPattern = re.compile('!?[a-z]', re.I)
-
-  rules = {}
 
   @classmethod
   def handle_conclusion(self, conclusion):
@@ -52,6 +50,14 @@ class Parser:
   def __init__(self):
     self.facts = []
     self.queries = []
+    self.rules = {}
+
+  def __str__(self):
+    return("Facts are : {}\nRules are : {}\n\nWhat we want to know : {}".format(
+      self.facts,
+      self.rules,
+      self.queries
+    ))
 
   def append_conclusion(self, left_member, right_member, isDoubleEquivalence):
     conclusions = Parser.handle_conclusion(right_member)
