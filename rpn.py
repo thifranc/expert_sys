@@ -6,6 +6,7 @@ import re
 from parser import Parser
 from tokens import Token
 from parse_error import ParseError
+from file_error import FileError
 
 def handle_operator(token, output, pile):
   if pile:
@@ -84,4 +85,4 @@ def from_string_to_graph(string):
     return from_postfix_to_graph(from_tokens_to_postfix(Parser.parse_string_to_token(string)))
   except ParseError as exception:
     print('Parse error of type : {} detected on line\n\t=>{}'.format(exception.exception_type, string))
-    exit(1)
+    raise FileError()

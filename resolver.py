@@ -3,6 +3,7 @@
 from node import Node
 from tokens import Token
 from contradiction_error import ContradictionError
+from file_error import FileError
 
 class Resolver:
   """
@@ -52,7 +53,7 @@ class Resolver:
     return (left and right)
 
   def error(self):
-    raise ContradictionError('unknown_operator')
+    raise FileError('unknown_operator')
 
   def resolve_premisse_value(self, premisse, parents):
     """
@@ -155,4 +156,4 @@ class Resolver:
     elif not node_value and not anti_node_value:
       return 'unknown'
     else:
-      raise ContradictionError()
+      raise ContradictionError(query, node_value)
