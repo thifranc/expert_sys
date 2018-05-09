@@ -5,7 +5,7 @@ A + !B => F
 X + !G => H
 V ^ W => X
 A + B => Y + Z
-F => !V
+#F => !V
 A + B <=> V
 
 =ABGFT

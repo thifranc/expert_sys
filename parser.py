@@ -4,8 +4,8 @@ import os
 import re
 
 from tokens import Token
-from error import Error
-
+from parse_error import ParseError
+from termcolor import colored
 class Parser:
 
   implicationPattern = re.compile('^(.*?)(<?)=>(.*?)(#|$)')
@@ -18,29 +18,14 @@ class Parser:
   """parenthesis arent useful as conclusion can only contain + operator"""
   getConclusionFactPattern = re.compile('!?[a-z]', re.I)
 
-  rules = {}
-
   @classmethod
   def handle_conclusion(self, conclusion):
     if Parser.negationPattern.findall(conclusion):
-      Error('add_rules', '-Negation')
+      raise ParseError('negation found in conclusion')
     elif Parser.badPatternInConclusion.findall(conclusion):
-      Error('add_rules', '-BadPattern')
+      raise ParseError('wrong pattern found in conclusion')
     else:
       return Parser.getConclusionFactPattern.findall(conclusion)
-
-  @classmethod
-  def testParenthesisSyntax(cls, line):
-    i = 0
-    for char in line:
-      if char == '(':
-        i += 1
-      elif char == ')':
-        i -= 1
-      if i < 0:
-        break
-    if i != 0:
-      Error('testParenthesisSyntax')
 
   @classmethod
   def parse_string_to_token(cls, string):
@@ -49,8 +34,7 @@ class Parser:
       => [ '(', '!a', '+', 'B', ')', '|', 'c' ]
     """
     if not Parser.tokenPattern.match(string):
-      Error('parse_string_to_token', '-bad pattern in token')
-      return
+      raise ParseError('bad token pattern')
     tokens = Parser.tokenPatternBis.findall(string)
     tokenInstances = []
     lastToken = None
@@ -58,8 +42,7 @@ class Parser:
       curToken = Token(token)
       tokenInstances.append(curToken)
       if not curToken.is_parenthesis() and Token.token_are_the_same_type(lastToken, curToken):
-        Error('parse_string_to_token', '-repetition not good')
-        return
+        raise ParseError('token repetition detected')
       if not curToken.is_parenthesis():
         lastToken = tokenInstances[-1]
     return tokenInstances
@@ -67,6 +50,14 @@ class Parser:
   def __init__(self):
     self.facts = []
     self.queries = []
+    self.rules = {}
+
+  def __str__(self):
+    return("Facts are : {}\nRules are : {}\n\nWhat we want to know : {}".format(
+      self.facts,
+      self.rules,
+      self.queries
+    ))
 
   def append_conclusion(self, left_member, right_member, isDoubleEquivalence):
     conclusions = Parser.handle_conclusion(right_member)
@@ -81,7 +72,7 @@ class Parser:
   def add_rules(self, line):
     matches = Parser.implicationPattern.match(line)
     if matches is None:
-      Error('add_rules')
+      raise ParseError('No implication symbol found on line')
     else:
       self.append_conclusion(matches.group(1), matches.group(3), matches.group(2))
 
@@ -100,13 +91,13 @@ class Parser:
 
   def set_facts(self, line):
     if self.facts:
-      Error('set_facts')
+      raise ParseError('file not well formatted, facts given two times')
     facts = self.parse_facts_or_queries(line)
     self.facts = facts
 
   def set_query(self, line):
     if self.queries:
-      Error('set_query')
+      raise ParseError('file not well formatted, queries given two times')
     queries = self.parse_facts_or_queries(line)
     self.queries = queries
 
