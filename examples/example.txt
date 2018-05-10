@@ -1,5 +1,4 @@
 C => E
-A + B + C => D
 A | B => C
 A + !B => F
 X + !G => H
@@ -11,3 +10,7 @@ A + B <=> V
 =ABGFT
 
 ?VXH
+
+
+
+A + B + C => D

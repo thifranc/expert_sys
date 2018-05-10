@@ -23,9 +23,12 @@ def resolve_file(filename):
           try:
             parser.handle_line(line)
           except ParseError as exception:
-            print(colored('Parse error of type : {} detected on line\n\t=>{}'.format(exception.exception_type, line), 'red'))
+            print(colored('Parse error of type : {} detected on line\n\t --> {}'.format(exception.exception_type, line), 'red'))
             raise FileError()
 
+    if not parser.queries:
+      print(colored('No queries furnished', 'red'))
+      raise FileError
     if args.verbose:
       print(parser)
     resolver = Resolver(parser.facts, parser.rules, args.verbose)
@@ -37,7 +40,7 @@ def resolve_file(filename):
         print(colored('query {}  has been resolved to : {}'.format(query, response), 'green'))
       except ContradictionError as exception:
         print(colored('Contradiction detected on {0} that is {1} while his opposite is also {1}'.format(exception.name, exception.value), 'red'))
-  except (FileNotFoundError, NameError, PermissionError, IsADirectoryError) as error:
+  except (FileNotFoundError, NameError, PermissionError, IsADirectoryError, UnicodeDecodeError) as error:
     print(colored(error, 'red'))
     raise FileError()
 
@@ -57,7 +60,10 @@ if __name__ == '__main__':
 
   # append all files from directory given as argument
   if args.directory:
-    files.extend([os.path.join(args.directory, f) for f in os.listdir(args.directory) if os.path.isfile(os.path.join(args.directory, f))])
+    try:
+      files.extend([os.path.join(args.directory, f) for f in os.listdir(args.directory) if os.path.isfile(os.path.join(args.directory, f))])
+    except NotADirectoryError:
+      print(colored('[Errno FuckYou] {} is not a directory\n'.format(args.directory), 'red'))
 
   for filename in filter(None, files):
     try:

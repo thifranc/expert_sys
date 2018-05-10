@@ -69,6 +69,10 @@ class Parser:
 
 
   def append_conclusion(self, left_member, right_member, isDoubleEquivalence):
+    if not right_member:
+      raise ParseError('No right member')
+    if not left_member:
+      raise ParseError('No left member')
     conclusions = Parser.handle_conclusion(right_member)
     if isDoubleEquivalence:
       self.append_conclusion(right_member, left_member, None)
@@ -86,7 +90,10 @@ class Parser:
       self.append_conclusion(matches.group(1), matches.group(3), matches.group(2))
 
   def parse_facts_or_queries(self, line):
-    matchedItems = list(Parser.getFactsOrQueryPattern.match(line).group(1))
+    regexResult = Parser.getFactsOrQueryPattern.match(line)
+    if not regexResult and len(line) > 0:
+      raise ParseError('Bad pattern ')
+    matchedItems = list(regexResult.group(1))
     listMatchedItems = []
     addNegation = None
     for matchedItem in matchedItems:
@@ -100,13 +107,13 @@ class Parser:
 
   def set_facts(self, line):
     if self.facts:
-      raise ParseError('file not well formatted, facts given two times')
+      raise ParseError('file not well formatted, facts given twice')
     facts = self.parse_facts_or_queries(line)
     self.facts = facts
 
   def set_query(self, line):
     if self.queries:
-      raise ParseError('file not well formatted, queries given two times')
+      raise ParseError('file not well formatted, queries given twice')
     queries = self.parse_facts_or_queries(line)
     self.queries = queries
 
