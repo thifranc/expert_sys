@@ -53,11 +53,20 @@ class Parser:
     self.rules = {}
 
   def __str__(self):
-    return("Facts are : {}\nRules are : {}\n\nWhat we want to know : {}".format(
+    return("Facts are : {}\n\nRules are :\n{}\nWhat we want to know : {}\n".format(
       self.facts,
-      self.rules,
+      self.print_rules(),
       self.queries
     ))
+
+  def print_rules(self):
+    ret = ""
+    for rule in self.rules:
+      ret += '\t{} can be resolved with : \n'.format(colored(rule, 'yellow'))
+      for premisse in self.rules[rule]:
+        ret += '\t   {}\n'.format(colored(premisse, 'yellow'))
+    return ret
+
 
   def append_conclusion(self, left_member, right_member, isDoubleEquivalence):
     conclusions = Parser.handle_conclusion(right_member)

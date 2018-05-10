@@ -77,6 +77,8 @@ class Resolver:
     """
     if Token.is_token(premisse):
       if parents and premisse in parents:
+        if self._verbose:
+          print(colored("Infinite loop detected. Will resolve to unknown", 'magenta'))
         return None
       return self.resolve_node(premisse, parents + [premisse])
     else:
