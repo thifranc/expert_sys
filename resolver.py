@@ -121,28 +121,27 @@ class Resolver:
       for resolve_node_value
       it prevents from solving many times the same node
     """
-    ret = 'trying to resolve node {}.'.format(name) # print for debug TO BE REMOVED
+    ret = 'trying to resolve node {}.'.format(name) # verbose
     if name in self._nodes:
-      if self._verbose:
-        print(ret, '\nreturning ==> ', self._nodes[name]._value, '\n') # print for debug TO BE REMOVED
-      return self._nodes[name]._value
+  #here print that node has been resolved
+      value = self._nodes[name]._value
     else:
-      node = Node(name, self._rules[name] if name in self._rules else []) # print for debug TO BE REMOVED
-      ret += '\nnode premisses are : ' # print for debug TO BE REMOVED
-      for premisse in node._premisses: # print for debug TO BE REMOVED
-        ret += "\n{}".format(premisse) # print for debug TO BE REMOVED
+      node = Node(name, self._rules[name] if name in self._rules else []) # verbose
+      ret += '\nnode premisses are : ' # verbose
+      for premisse in node._premisses: # verbose
+        ret += "\n{}".format(premisse) # verbose
       value = self.resolve_node_value(node, parents)
       node._value = value
       self.add_node(node)
-      if not anti_test:
-        anti_value = self.resolve_node(self.get_anti_query(name), parents + [ name ], True)
-        if value and anti_value:
-          if self._verbose:
-            print(ret) # print for debug
-          raise ContradictionError(name, value)
-      if self._verbose:
-        print(ret, '\nreturning ==> ', value, '\n') # print for debug TO BE REMOVED
-      return value
+    if not anti_test:
+      anti_value = self.resolve_node(self.get_anti_query(name), parents + [ name ], True)
+      if value and anti_value:
+        if self._verbose:
+          print(ret) # print for debug
+        raise ContradictionError(name, value)
+    if self._verbose:
+      print(ret, '\nreturning ==> ', value, '\n') # verbose
+    return value
 
   def resolve_query(self, query):
     """
@@ -151,8 +150,8 @@ class Resolver:
       and make a synthese of combined results
     """
     anti_query = self.get_anti_query(query)
-    node_value = self.resolve_node(query, [])
-    anti_node_value = self.resolve_node(anti_query)
+    node_value = self.resolve_node(query, [], True)
+    anti_node_value = self.resolve_node(anti_query, [], True)
     if not node_value and anti_node_value:
       return 'false'
     elif node_value and not anti_node_value:
