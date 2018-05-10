@@ -85,5 +85,5 @@ def from_string_to_graph(string):
   try:
     return from_postfix_to_graph(from_tokens_to_postfix(Parser.parse_string_to_token(string)))
   except ParseError as exception:
-    print(colored('Parse error of type : {} detected on line\n\t=>{}'.format(exception.exception_type, string), 'red'))
+    print(colored('Parse error of type : {} detected on line\n\t --> {}'.format(exception.exception_type, string), 'red'))
     raise FileError()
