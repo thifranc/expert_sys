@@ -4,28 +4,34 @@ import argparse
 import os
 import re
 import collections
+
+try:
+  from termcolor import colored
+except (ImportError) as error:
+  print(error)
+  print('We recommand you to install it by running: pip3 install termcolor')
+  exit(1)
+
 from parser import Parser
 from resolver import Resolver
 from parse_error import ParseError
 from contradiction_error import ContradictionError
 from file_error import FileError
-from termcolor import colored
 
 def resolve_file(filename):
   parser = Parser()
   try:
     with open(filename, 'r') as file:
-        for line in file:
-          line = re.sub('\s', '', line)
-          line_is_ignored = ignored_line.match(line)
-          if line_is_ignored is not None:
-            continue
-          try:
-            parser.handle_line(line)
-          except ParseError as exception:
-            print(colored('Parse error of type : {} detected on line\n\t --> {}'.format(exception.exception_type, line), 'red'))
-            raise FileError()
-
+      for line in file:
+        line = re.sub('\s', '', line)
+        line_is_ignored = ignored_line.match(line)
+        if line_is_ignored is not None:
+          continue
+        try:
+          parser.handle_line(line)
+        except ParseError as exception:
+          print(colored('Parse error of type : {} detected on line\n\t --> {}'.format(exception.exception_type, line), 'red'))
+          raise FileError()
     if not parser.queries:
       print(colored('No queries furnished', 'red'))
       raise FileError
@@ -73,5 +79,3 @@ if __name__ == '__main__':
       pass
     finally:
       print(colored('\n<-------->\n', 'cyan'))
-
-

@@ -6,6 +6,7 @@ import re
 from tokens import Token
 from parse_error import ParseError
 from termcolor import colored
+
 class Parser:
 
   implicationPattern = re.compile('^(.*?)(<?)=>(.*?)(#|$)')
