@@ -121,11 +121,11 @@ class Resolver:
       for resolve_node_value
       it prevents from solving many times the same node
     """
-    ret = 'trying to resolve node {}.'.format(name) # verbose
     if name in self._nodes:
-  #here print that node has been resolved
+      ret = 'Value of node {} has already been found.'.format(name) # verbose
       value = self._nodes[name]._value
     else:
+      ret = 'trying to resolve node {}.'.format(name) # verbose
       node = Node(name, self._rules[name] if name in self._rules else []) # verbose
       ret += '\nnode premisses are : ' # verbose
       for premisse in node._premisses: # verbose
